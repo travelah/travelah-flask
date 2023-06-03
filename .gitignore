@@ -1,4 +1,3 @@
 venv
 .vscode
 __pycache__
-travelah_small-BERT_cnn_model.h5
