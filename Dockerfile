@@ -1,6 +1,6 @@
 # a small operating system
 FROM python:3.9-slim
-RUN python -m install --upgrade pip
+RUN pip install --upgrade pip
 ENV PYTHONUNBUFFERED True
 
 ENV APP_HOME /app
