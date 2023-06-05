@@ -2,5 +2,6 @@ Flask
 keras
 numpy
 tensorflow
-tensorflow_hub==0.13.0
-tensorflow_text==2.10.0
+tensorflow_hub
+tensorflow_text
+gunicorn
