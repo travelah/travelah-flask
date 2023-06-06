@@ -3,7 +3,11 @@ from tensorflow.keras.models import load_model
 import numpy as np
 import tensorflow_hub as hub
 import tensorflow_text as text
+from official.nlp import optimization
 from flask import Flask, request, jsonify
+import os
+import shutil
+tf.get_logger().setLevel('ERROR')
 import json
 import os
 import h5py
