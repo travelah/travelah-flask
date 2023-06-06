@@ -17,8 +17,11 @@ app = Flask(__name__)
 with open('./data/intents.json', 'r') as file:
     intents_data = json.load(file)
 
+loss = tf.keras.losses.CategoricalCrossentropy(from_logits=False)
+optimizer = tf.keras.optimizers.Adam(1e-5)
 model_filename = "model/travelahAlbertCNN.h5"
 loaded_model = load_model(model_filename, custom_objects={'KerasLayer': hub.KerasLayer}, compile=False)
+loaded_model.compile(optimizer=optimizer, loss=loss)
 
 @app.route('/predict', methods=['POST'])
 def predict_response():
@@ -42,8 +45,8 @@ def predict_response():
         sorted_indices = np.argsort(predictions)[0][::-1]
         first_intent_index = sorted_indices[0]
         second_intent_index = sorted_indices[1]
-        first_intent = intents_data['intent'][first_intent_index]['intent']
-        second_intent = intents_data['intent'][second_intent_index]['intent']
+        first_intent = intents_data['intent'][first_intent_index]['alias']
+        second_intent = intents_data['intent'][second_intent_index]['alias']
         predicted_intent = None
         predicted_responses = "Sorry. I don't know what you just say. Do you mean one of this?"
 
@@ -54,7 +57,6 @@ def predict_response():
     response = {
             "predicted_intent": predicted_intent,
             "predicted_response": predicted_responses,
-            "probability": predicted_intent_probability,
             "alt_intent_1": first_intent,
             "alt_intent_2": second_intent,
         }
