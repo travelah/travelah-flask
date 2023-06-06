@@ -1,6 +1,6 @@
-Flask
-keras
-numpy
+Flask==2.2.4
+keras==2.12.0
+numpy==1.23.5
 tensorflow==2.12.0
 tensorflow_hub==0.13.0
 tensorflow_text==2.12.1
