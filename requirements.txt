@@ -12,3 +12,4 @@ tensorflow_hub
 # bert-for-tf2
 # tf-models-official
 gunicorn
+h5py
