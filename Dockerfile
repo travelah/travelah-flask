@@ -1,5 +1,5 @@
 # a small operating system
-FROM python:3.11.0-slim
+FROM python:3.9.6-slim
 RUN pip install --upgrade pip
 
 RUN apt-get update && \
