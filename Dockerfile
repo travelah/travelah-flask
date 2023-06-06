@@ -1,5 +1,5 @@
 # a small operating system
-FROM python:3.9-slim
+FROM python:3.11-slim
 RUN pip install --upgrade pip
 ENV PYTHONUNBUFFERED True
 
