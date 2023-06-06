@@ -1,8 +1,8 @@
-import tensorflow as tf
+# import tensorflow as tf
 from tf.keras.models import load_model
 import numpy as np
 import tensorflow_hub as hub
-import tensorflow_text as text
+# import tensorflow_text as text
 from flask import Flask, request, jsonify
 import json
 import os
@@ -12,7 +12,7 @@ app = Flask(__name__)
 with open('./data/intents.json', 'r') as file:
     intents_data = json.load(file)
 
-model_filename = "./model/travelah_small-BERT_cnn_model.h5"
+model_filename = "model/travelahAlbertCNN.h5"
 loaded_model = load_model(model_filename, custom_objects={'KerasLayer': hub.KerasLayer}, compile=False)
 
 @app.route('/predict', methods=['POST'])
@@ -23,7 +23,7 @@ def predict_response():
     predicted_intent_index = np.argmax(predictions)
     predicted_intent_probability = float(predictions[0][predicted_intent_index])
 
-    for intent in intents_data['intents']:
+    for intent in intents_data['intent']:
         if intent['intent_encoding'] == str(predicted_intent_index):
             predicted_intent = intent['intent']
             predicted_responses = intent['responses'][0]
@@ -37,8 +37,8 @@ def predict_response():
         sorted_indices = np.argsort(predictions)[0][::-1]
         first_intent_index = sorted_indices[0]
         second_intent_index = sorted_indices[1]
-        first_intent = intents_data['intents'][first_intent_index]['intent']
-        second_intent = intents_data['intents'][second_intent_index]['intent']
+        first_intent = intents_data['intent'][first_intent_index]['intent']
+        second_intent = intents_data['intent'][second_intent_index]['intent']
         predicted_intent = None
         predicted_responses = "Sorry. I don't know what you just say. Do you mean one of this?"
 
