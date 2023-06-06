@@ -1,5 +1,5 @@
 import tensorflow as tf
-from keras.models import load_model
+from tf.keras.models import load_model
 import numpy as np
 import tensorflow_hub as hub
 import tensorflow_text as text
