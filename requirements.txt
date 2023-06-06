@@ -7,7 +7,7 @@ tensorflow
 tensorflow-text==2.11.*
 tf-models-official==2.11.0
 tensorflow_hub
-tensorflow_text
-bert-for-tf2
+# tensorflow_text
+# bert-for-tf2
 # tf-models-official
 gunicorn
