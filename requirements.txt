@@ -1,7 +1,7 @@
 Flask
 keras
 numpy
-cython
+Cython
 # tensorflow==2.12.0
 tensorflow
 # tensorflow_hub==0.13.0
