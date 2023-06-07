@@ -16,6 +16,7 @@ RUN apt-get install -y build-essential && \
     pip install -r requirements.txt
 
 COPY . ./
+COPY model/ model/
 
 CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app
 

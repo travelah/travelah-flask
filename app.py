@@ -19,7 +19,9 @@ with open('./data/intents.json', 'r') as file:
 
 loss = tf.keras.losses.CategoricalCrossentropy(from_logits=False)
 optimizer = tf.keras.optimizers.Adam(1e-5)
-model_filename = "model/travelahAlbertCNN.h5"
+os.environ["H5PY_CACHE_GET_ENTRY_LATEST"] = "1"
+APP_HOME = "/app"
+model_filename = os.path.join(APP_HOME, "model/travelahAlbertCNN.h5")
 loaded_model = load_model(model_filename, custom_objects={'KerasLayer': hub.KerasLayer}, compile=False)
 loaded_model.compile(optimizer=optimizer, loss=loss)
 
