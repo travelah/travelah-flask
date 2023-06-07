@@ -959,7 +959,7 @@
             "alias": "What to prepare before go?"
         },
         {
-            "intent": "recommmend",
+            "intent": "recommend",
             "patterns": [
                 "can you recommend any landmarks or historic sites to visit in this area?",
                 "i'm interested in exploring art and cultural attractions. any recommendations?",

@@ -20,14 +20,15 @@ with open('./data/intents.json', 'r') as file:
 loss = tf.keras.losses.CategoricalCrossentropy(from_logits=False)
 optimizer = tf.keras.optimizers.Adam(1e-5)
 os.environ["H5PY_CACHE_GET_ENTRY_LATEST"] = "1"
-APP_HOME = "/app"
-model_filename = os.path.join(APP_HOME, "model/travelahAlbertCNN.h5")
+# APP_HOME = "/app"
+# model_filename = os.path.join(APP_HOME, "model/travelahAlbertCNN.h5")
+model_filename = "model/travelahAlbertCNN.h5"
 loaded_model = tf.keras.models.load_model(model_filename, custom_objects={'KerasLayer': hub.KerasLayer}, compile=False)
 loaded_model.compile(optimizer=optimizer, loss=loss)
 
 @app.route('/predict', methods=['POST'])
 def predict_response():
-    user_utterance = request.json['user_utterance']
+    user_utterance = request.json['userUtterance'].lower()
 
     predictions = loaded_model.predict([user_utterance])
     predicted_intent_index = np.argmax(predictions)
@@ -37,11 +38,16 @@ def predict_response():
         if intent['intent_encoding'] == str(predicted_intent_index):
             predicted_intent = intent['intent']
             predicted_responses = intent['responses'][0]
+            chat_type = 0
+
+            #Test Recommender
+            if(predicted_intent == "recommend"):
+                predicted_responses = "Here is the recommendations"
+                chat_type = 3
             break
-    else:
-        predicted_intent = ""
-        predicted_responses = ""
-    
+
+    first_intent = None
+    second_intent = None
 
     if predicted_intent_probability < 0.25:
         sorted_indices = np.argsort(predictions)[0][::-1]
@@ -49,18 +55,14 @@ def predict_response():
         second_intent_index = sorted_indices[1]
         first_intent = intents_data['intent'][first_intent_index]['alias']
         second_intent = intents_data['intent'][second_intent_index]['alias']
-        predicted_intent = None
         predicted_responses = "Sorry. I don't know what you just say. Do you mean one of this?"
-
-    else:
-        first_intent = None
-        second_intent = None
+        chat_type = 1
     
     response = {
-            "predicted_intent": predicted_intent,
-            "predicted_response": predicted_responses,
-            "alt_intent_1": first_intent,
-            "alt_intent_2": second_intent,
+            "predictedResponse": predicted_responses,
+            "altIntent1": first_intent,
+            "altIntent2": second_intent,
+            "chatType" : chat_type
         }
 
     return jsonify(response)
