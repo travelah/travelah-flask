@@ -12,6 +12,8 @@ ENV APP_HOME /app
 
 WORKDIR $APP_HOME
 
+COPY requirements.txt ./
+
 RUN apt-get install -y build-essential && \
     pip install -r requirements.txt
 
