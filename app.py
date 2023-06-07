@@ -22,7 +22,7 @@ optimizer = tf.keras.optimizers.Adam(1e-5)
 os.environ["H5PY_CACHE_GET_ENTRY_LATEST"] = "1"
 APP_HOME = "/app"
 model_filename = os.path.join(APP_HOME, "model/travelahAlbertCNN.h5")
-loaded_model = load_model(model_filename, custom_objects={'KerasLayer': hub.KerasLayer}, compile=False)
+loaded_model = tf.keras.models.load_model(model_filename, custom_objects={'KerasLayer': hub.KerasLayer}, compile=False)
 loaded_model.compile(optimizer=optimizer, loss=loss)
 
 @app.route('/predict', methods=['POST'])
