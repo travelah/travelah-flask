@@ -20,5 +20,5 @@ RUN apt-get install -y build-essential && \
 COPY . ./
 COPY model/ model/
 
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app
+CMD ["python3", "-m" , "flask", "run", "--host=0.0.0.0"]
 
