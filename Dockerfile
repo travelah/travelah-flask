@@ -2,10 +2,11 @@
 FROM python:3.9.6-slim
 RUN pip install --upgrade pip
 
-RUN apt-get update && \
-    apt-get install -y curl && \
-    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
-    apt-get install -y git-lfs
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential \
+    git-lfs \
+    unzip
 
 ENV PYTHONUNBUFFERED True
 ENV APP_HOME /app
@@ -13,15 +14,10 @@ ENV APP_HOME /app
 WORKDIR $APP_HOME
 
 COPY requirements.txt ./
+RUN pip install -r requirements.txt
 
-RUN apt-get install -y build-essential && \
-    pip install -r requirements.txt
+COPY . .
+COPY model/ /app/model/
+RUN unzip /app/model/travelahAlbertCNN.zip -d /app/model
 
-COPY . ./
-COPY ./model/ ./model/
-RUN apt-get update && apt-get install -y unzip
-RUN unzip /model/travelahAlbertCNN.zip -d /app/model
-
-
-CMD ["python3", "-m" , "flask", "run", "--host=0.0.0.0"]
-
+CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0"]
