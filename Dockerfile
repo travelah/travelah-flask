@@ -21,4 +21,4 @@ COPY . .
 COPY model/ /app/model/
 RUN unzip /app/model/travelahAlbertCNN.zip -d /app/model
 
-CMD exec gunicorn --bind :$PORT --workers 2 --threads 8 --timeout 0 main:app
+CMD exec gunicorn --bind :$PORT --workers 2 --threads 8 --timeout 0 app:app
