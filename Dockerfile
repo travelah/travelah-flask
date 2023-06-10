@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
 
 ENV PYTHONUNBUFFERED True
 ENV APP_HOME /app
+ENV HOST 0.0.0.0
 ENV PORT 3000
 WORKDIR $APP_HOME
 

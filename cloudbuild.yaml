@@ -35,4 +35,6 @@ steps:
       - 'managed'
       - '--allow-unauthenticated'
       - '--memory'
-      - '4Gi'
+      - '8Gi'
+      - '--port'
+      - '3000'
