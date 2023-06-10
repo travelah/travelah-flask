@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
 
 ENV PYTHONUNBUFFERED True
 ENV APP_HOME /app
-
+ENV PORT 3000
 WORKDIR $APP_HOME
 
 COPY requirements.txt ./
