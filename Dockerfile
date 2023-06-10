@@ -18,7 +18,10 @@ RUN apt-get install -y build-essential && \
     pip install -r requirements.txt
 
 COPY . ./
-COPY model/ model/
+COPY ./model/ ./model/
+RUN apt-get update && apt-get install -y unzip
+RUN unzip /model/travelahAlbertCNN.zip -d /app/model
+
 
 CMD ["python3", "-m" , "flask", "run", "--host=0.0.0.0"]
 
