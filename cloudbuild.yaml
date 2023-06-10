@@ -35,4 +35,8 @@ steps:
       - 'managed'
       - '--allow-unauthenticated'
       - '--memory'
-      - '2Gi'
+      - '8Gi'
+      - '--port'
+      - '3000'
+images:
+  - 'gcr.io/$PROJECT_ID/flask-app:latest'
