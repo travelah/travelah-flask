@@ -39,6 +39,7 @@ def predict_response():
         combined_utterance = user_utterance
     
     empty_lists = []
+    places = []
     predictions = loaded_model.predict([combined_utterance])
     predicted_intent_index = np.argmax(predictions)
     predicted_intent_probability = float(predictions[0][predicted_intent_index])
@@ -50,7 +51,13 @@ def predict_response():
             chat_type = 0
 
             if predicted_intent == "recommender":
-                predicted_responses = [recommender(combined_utterance)]
+                results = recommender(combined_utterance)
+                if not isinstance(results, str):
+                    places =  results[0]
+                    itinerary = results[1]
+                    predicted_responses = [itinerary]
+                else:
+                    predicted_responses = [results]
                 empty_lists = predict_entities(combined_utterance)[-1]
                 chat_type = 2
             
@@ -59,7 +66,7 @@ def predict_response():
     first_intent = None
     second_intent = None
 
-    if predicted_intent_probability < 0.25:
+    if predicted_intent_probability < 0.50:
         sorted_indices = np.argsort(predictions)[0][::-1]
         first_intent_index = sorted_indices[0]
         second_intent_index = sorted_indices[1]
@@ -72,16 +79,16 @@ def predict_response():
         "predictedResponse": predicted_responses,
         "altIntent1": first_intent,
         "altIntent2": second_intent,
-        "chatType": chat_type
+        "chatType": chat_type,
+        "places": places
     }
 
     session['combined_utterance'] = combined_utterance
     if len(empty_lists) == 0:
-        print("HOREE")
         session['combined_utterance'] = ""
         combined_utterance = ""
     
-    return jsonify(response, session['combined_utterance'])
+    return jsonify(response)
 
 @app.route('/flask', methods=['GET'])
 def index():

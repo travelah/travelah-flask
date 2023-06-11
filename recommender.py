@@ -63,6 +63,11 @@ def recommender(text):
     hotel = ', '.join(hotel) if hotel else ''
     attraction = ', '.join(attraction) if attraction else ''
 
-    recommendation = main(region, food, hotel, attraction)
+    places, req = main(region, food, hotel, attraction)
 
-    return recommendation
+    return places, req
+
+# text = "i want to go to ubud to see some art performances an enjoying indonesian food. I want to stay at hotel with swimming pool also."
+# places, rec = recommender(text)
+# print(rec)
+# print(places)

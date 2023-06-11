@@ -1,1 +1,1 @@
-hotel
+print(places)
