@@ -56,10 +56,12 @@ def predict_response():
                     places =  results[0]
                     itinerary = results[1]
                     predicted_responses = [itinerary]
+                    chat_type = 2
                 else:
                     predicted_responses = [results]
+                    chat_type = 0
                 empty_lists = predict_entities(combined_utterance)[-1]
-                chat_type = 2
+                
             
             predicted_responses = random.choice(predicted_responses)
 
