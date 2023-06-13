@@ -1,5 +1,6 @@
 import spacy
 from recommendation import main
+import random
 
 def follow_up(empty_lists):
     if "region" in empty_lists:
@@ -62,12 +63,14 @@ def recommender(text):
     food = ', '.join(food) if food else ''
     hotel = ', '.join(hotel) if hotel else ''
     attraction = ', '.join(attraction) if attraction else ''
+    days = random.randint(2, 7)
 
-    places, req = main(region, food, hotel, attraction)
 
-    return places, req
+    req, places_coord = main(region, food, hotel, attraction, days)
+
+    return req, places_coord
 
 # text = "i want to go to ubud to see some art performances an enjoying indonesian food. I want to stay at hotel with swimming pool also."
-# places, rec = recommender(text)
+# rec, places_coord = recommender(text)
 # print(rec)
-# print(places)
+# print(places_coord)

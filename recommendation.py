@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import nltk
+import ast
 nltk.download("stopwords")
 import re
 from nltk.corpus import stopwords as nltk_stopwords
@@ -88,8 +89,9 @@ def get_top_recommendations(df, num_recommendations):
     return df.head(num_recommendations)
 
 def generate_itinerary(regions, travel_preferences, hotel_preferences, food_preferences, duration):
-    itinerary = "Great! Here's your itinerary for your trip:\n\n"
+    itinerary = "Great! Here's your itinerary for your trip:\n"
     all_recommendations = []
+    all_locations = [] 
     num_days_per_region = duration // len(regions)
     remaining_days = duration % len(regions)
     preference_counts = {}
@@ -121,7 +123,6 @@ def generate_itinerary(regions, travel_preferences, hotel_preferences, food_pref
         for preference, count in num_recommendations_per_category.items():
             travel_results_category = search_travel_spot(region, [preference])
             num_travel_recommendations = min(count, len(travel_results_category))
-
             num_recommendations = 2 
             top_travel_recommendations = get_top_recommendations(travel_results_category, num_recommendations)
             travel_results = pd.concat([travel_results, top_travel_recommendations], ignore_index=True)
@@ -133,37 +134,45 @@ def generate_itinerary(regions, travel_preferences, hotel_preferences, food_pref
         if not travel_recommendations.empty:
             itinerary += f"When you are in {region.capitalize()}, the Best Place to Stay based on your preference is in the "
             
-            # Hotel Recommendation
             hotel_results = pd.DataFrame()
             hotel_results = search_hotels(region, hotel_preferences)
             num_hotel_recommendations = min(10, len(hotel_results))
             top_hotel_recommendations = get_top_recommendations(hotel_results, num_hotel_recommendations)
 
-            # Select hotel recommendation
             hotel_recommendation = top_hotel_recommendations.head(1)
             
             if not hotel_recommendation.empty:
+                hotel_location = hotel_recommendation['location'].iloc[0]
+                location = ast.literal_eval(hotel_location)
+                all_locations.append({"place": hotel_recommendation['name_hotel'].iloc[0], "lat": location['lat'], "lng": location['lng']})  
+
                 itinerary += f"{hotel_recommendation['name_hotel'].iloc[0]} or any other hotel of your choice. "
 
                 if not travel_recommendations.empty:
-                    itinerary += f"You can enjoy {', '.join(travel_preferences)} by exploring the "
+                    itinerary += f"You can enjoy {'and '.join(travel_preferences)} by exploring the "
                     for _, spot in travel_recommendations.iterrows():
-                        itinerary += spot['place'] + "and "
-                    itinerary = itinerary[:-2] + ". "
+                        itinerary += spot['place'] + " and "
+                        location = ast.literal_eval(spot['location'])
+                        all_locations.append({"place": spot['place'], "lat": location['lat'], "lng": location['lng']})  
+                    itinerary = itinerary[:-5] + ". "
                 else:
-                    itinerary += ""
+                    itinerary += "\n"
 
-                # Food Place Recommendations
                 food_recommendations = []
                 for food_preference in food_preferences:
                     food_results_category = search_food(region, [food_preference])
-                    num_food_recommendations = min(1, len(food_results_category))  # Limit to one recommendation per cuisine preference
+                    num_food_recommendations = min(1, len(food_results_category))
                     top_food_recommendations = get_top_recommendations(food_results_category, num_food_recommendations)
                     food_recommendations.extend(top_food_recommendations['place_name'].tolist())
 
                 if food_recommendations:
-                    itinerary += f"For food preferences, you can try eating {'or '.join(food_preferences)} cuisine at the "
-                    itinerary += ", ".join(food_recommendations) + "."
+                    itinerary += f"For food preferences, you can try eating at "
+                    for place_name in food_recommendations:
+                        itinerary += place_name + ", "
+                        place_location = food_df.loc[food_df['place_name'] == place_name, 'location'].iloc[0]
+                        location = ast.literal_eval(place_location)
+                        all_locations.append({"place": place_name, "lat": location['lat'], "lng": location['lng']})  
+                    itinerary = itinerary[:-2] + "."
                 else:
                     itinerary += "No food recommendations found.\n\n"
             else:
@@ -175,8 +184,9 @@ def generate_itinerary(regions, travel_preferences, hotel_preferences, food_pref
         all_recommendations.extend(hotel_recommendation['name_hotel'].tolist())
 
     all_recommendations.extend(food_recommendations)
+    all_recommendations_with_locations = [{"place": recommendation, "lat": next((location['lat'] for location in all_locations if location['place'] == recommendation), 'Unknown lat'), "lng": next((location['lng'] for location in all_locations if location['place'] == recommendation), 'Unknown lng')} for recommendation in all_recommendations]
 
-    return itinerary, all_recommendations
+    return itinerary, all_recommendations_with_locations
 
 def search_travel_spot(region, query):
     query_string = ' '.join(query)
@@ -261,7 +271,7 @@ def check_region_travel(region):
 
     return False
 
-def main(region_inp, attraction, hotel, food, duration_input= 7):
+def main(region_inp, attraction, hotel, food, duration_input):
     region_input_travel = region_inp
     place_input_travel = attraction
     place_input_hotel = hotel
@@ -280,9 +290,9 @@ def main(region_inp, attraction, hotel, food, duration_input= 7):
                 valid_regions.append(region.strip())
 
         if valid_regions:
-            rec_places, itinerary = generate_itinerary(valid_regions, travel_preferences, hotel_preferences, food_preferences, int(duration))
-            return itinerary, rec_places
+            itinerary, places_coord = generate_itinerary(valid_regions, travel_preferences, hotel_preferences, food_preferences, int(duration))
+            return itinerary, places_coord
         else:
-            print("Sorry, the entered regions are not valid.")
+            return "Sorry, the entered regions are not valid."
     else:
-        print("Please enter valid regions, location/type of place for travel, description/keywords for hotel, food preferences, and duration of travel (in days).")
+        return "Please enter valid regions, location/type of place for travel, description/keywords for hotel, food preferences, and duration of travel (in days)."

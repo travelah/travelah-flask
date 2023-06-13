@@ -53,8 +53,8 @@ def predict_response():
             if predicted_intent == "recommender":
                 results = recommender(combined_utterance)
                 if not isinstance(results, str):
-                    places =  results[0]
-                    itinerary = results[1]
+                    places =  results[1]
+                    itinerary = results[0]
                     predicted_responses = [itinerary]
                     chat_type = 2
                 else:
