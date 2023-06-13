@@ -112,12 +112,12 @@ def generate_itinerary(regions, travel_preferences, hotel_preferences, food_pref
     for i, region in enumerate(regions):
         if i == len(regions) - 1:
             if remaining_days > 0:
-                itinerary += f"Day {i*num_days_per_region+1}-{i*num_days_per_region+num_days_per_region+remaining_days}: {region}\n"
+                itinerary += f"Day {i*num_days_per_region+1}-{i*num_days_per_region+num_days_per_region+remaining_days}: {region.capitalize()}\n"
                 remaining_days -= 1
             else:
-                itinerary += f"Day {i*num_days_per_region+1}-{i*num_days_per_region+num_days_per_region}: {region}\n"
+                itinerary += f"Day {i*num_days_per_region+1}-{i*num_days_per_region+num_days_per_region}: {region.capitalize()}\n"
         else:
-            itinerary += f"Day {i*num_days_per_region+1}-{i*num_days_per_region+num_days_per_region}: {region}\n"
+            itinerary += f"Day {i*num_days_per_region+1}-{i*num_days_per_region+num_days_per_region}: {region.capitalize()}\n"
 
         travel_results = pd.DataFrame()
         for preference, count in num_recommendations_per_category.items():
