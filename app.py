@@ -15,8 +15,6 @@ import secrets
 from recommendation import main
 
 app = Flask(__name__)
-secret_key = secrets.token_hex(16)
-app.secret_key = secret_key
 
 with open('./data/intents.json', 'r') as file:
     intents_data = json.load(file)
@@ -86,7 +84,7 @@ def create_predictor():
         if len(empty_lists) == 0:
             combined_utterance = ""
         
-        return jsonify(response, combined_utterance)
+        return jsonify(response, combined_utterance, empty_lists)
     
     return predict_response
 
