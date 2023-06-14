@@ -4,32 +4,30 @@ import numpy as np
 import tensorflow_hub as hub
 import tensorflow_text as text
 from official.nlp import optimization
-from flask import Flask, request, jsonify
-import os
+from flask import Flask, request, jsonify, session
 tf.get_logger().setLevel('ERROR')
-import json
 from recommender import recommender
-import random
+import os, json, random, secrets
 
 app = Flask(__name__)
+secret_key = secrets.token_hex(16)
+app.secret_key = secret_key
 
 with open('./data/intents.json', 'r') as file:
     intents_data = json.load(file)
 
 loss = tf.keras.losses.CategoricalCrossentropy(from_logits=False)
 optimizer = tf.keras.optimizers.Adam(1e-5)
-os.environ["H5PY_CACHE_GET_ENTRY_LATEST"] = "1"
+
 model_filename = "model/travelahAlbertCNNFinal.h5"
 loaded_model = tf.keras.models.load_model(model_filename, custom_objects={'KerasLayer': hub.KerasLayer}, compile=False)
 loaded_model.compile(optimizer=optimizer, loss=loss)
-combined_utterance = ""
 
 @app.route('/predict', methods=['POST'])
 def predict_response():
     user_utterance = request.json['userUtterance'].lower()
-    # combined_utterance = session.get('combined_utterance', '')
-    # session['combined_utterance'] = combined_utterance
-    global combined_utterance
+    combined_utterance = session.get('combined_utterance', '')
+    session['combined_utterance'] = combined_utterance
     if combined_utterance:
         combined_utterance += ". " + user_utterance
     else:
@@ -65,7 +63,7 @@ def predict_response():
     first_intent = None
     second_intent = None
 
-    if predicted_intent_probability < 0.50:
+    if predicted_intent_probability < 0.40:
         sorted_indices = np.argsort(predictions)[0][::-1]
         first_intent_index = sorted_indices[0]
         second_intent_index = sorted_indices[1]
@@ -81,7 +79,7 @@ def predict_response():
         "chatType": chat_type,
         "places": places
     }
-    
+    session['combined_utterance'] = combined_utterance
     return jsonify(response)
 
 @app.route('/flask', methods=['GET'])
