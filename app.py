@@ -65,7 +65,7 @@ def predict_response():
     first_intent = None
     second_intent = None
 
-    if predicted_intent_probability < 0.35:
+    if predicted_intent_probability < 0.50:
         sorted_indices = np.argsort(predictions)[0][::-1]
         first_intent_index = sorted_indices[0]
         second_intent_index = sorted_indices[1]
