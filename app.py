@@ -4,15 +4,12 @@ import numpy as np
 import tensorflow_hub as hub
 import tensorflow_text as text
 from official.nlp import optimization
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify
 tf.get_logger().setLevel('ERROR')
 from recommender import recommender
-import os, json, random, secrets
+import os, json, random
 
 app = Flask(__name__)
-secret_key = secrets.token_hex(16)
-app.secret_key = secret_key
-app.config['SESSION_TYPE'] = 'filesystem'
 
 with open('./data/intents.json', 'r') as file:
     intents_data = json.load(file)
@@ -23,12 +20,12 @@ optimizer = tf.keras.optimizers.Adam(1e-5)
 model_filename = "model/travelahAlbertCNNFinal.h5"
 loaded_model = tf.keras.models.load_model(model_filename, custom_objects={'KerasLayer': hub.KerasLayer}, compile=False)
 loaded_model.compile(optimizer=optimizer, loss=loss)
+combined_utterance = ""
 
 @app.route('/predict', methods=['POST'])
 def predict_response():
     user_utterance = request.json['userUtterance'].lower()
-    combined_utterance = session.get('combined_utterance', '')
-    session['combined_utterance'] = combined_utterance
+    global combined_utterance
     if combined_utterance:
         combined_utterance += ". " + user_utterance
     else:
@@ -80,7 +77,6 @@ def predict_response():
         "chatType": chat_type,
         "places": places
     }
-    session['combined_utterance'] = combined_utterance
     return jsonify(response)
 
 @app.route('/flask', methods=['GET'])

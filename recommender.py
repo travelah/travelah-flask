@@ -9,13 +9,13 @@ nlpAtt = spacy.load("model/spacyTravelah/model-att")
 
 def follow_up(empty_lists):
     if "region" in empty_lists:
-        return "I can do that. Please provide the desired region for your trip"
+        return "I can do that. Please provide the desired region for your trip (examples: kuta, ubud, denpasar, etc.)"
     elif "attraction" in empty_lists:
-        return "Can you specify the attractions you are interested in?"
+        return "Can you specify the attractions you are interested in? (examples: beach, art performance, museum, etc.)"
     elif "hotel" in empty_lists:
-        return "I want to know your hotel preferences. Can you mention it?"
+        return "I want to know your hotel preferences. Can you mention it? (examples: swimming pool, fitness center, gift shop, etc.)"
     elif "food" in empty_lists:
-        return "Please let us know your food preferences."
+        return "Please let us know your food preferences. (examples: indonesian, healthy, seafood, etc.)"
     else:
         return None
 
