@@ -20,19 +20,12 @@ optimizer = tf.keras.optimizers.Adam(1e-5)
 model_filename = "model/travelahAlbertCNNFinal.h5"
 loaded_model = tf.keras.models.load_model(model_filename, custom_objects={'KerasLayer': hub.KerasLayer}, compile=False)
 loaded_model.compile(optimizer=optimizer, loss=loss)
-combined_utterance = ""
 
 @app.route('/predict', methods=['POST'])
 def predict_response():
     user_utterance = request.json['userUtterance'].lower()
-    global combined_utterance
-    if combined_utterance:
-        combined_utterance += ". " + user_utterance
-    else:
-        combined_utterance = user_utterance
-    
     places = []
-    predictions = loaded_model.predict([combined_utterance])
+    predictions = loaded_model.predict([user_utterance])
     predicted_intent_index = np.argmax(predictions)
     predicted_intent_probability = float(predictions[0][predicted_intent_index])
 
@@ -43,18 +36,15 @@ def predict_response():
             chat_type = 0
 
             if predicted_intent == "recommender":
-                results = recommender(combined_utterance)
+                results = recommender(user_utterance)
                 if not isinstance(results, str):
                     places =  results[1]
                     itinerary = results[0]
                     predicted_responses = [itinerary]
                     chat_type = 2
-                    combined_utterance = ""
                 else:
                     predicted_responses = [results]
-                    chat_type = 0
-            else:
-                combined_utterance = "" 
+                    chat_type = 3
             
             predicted_responses = random.choice(predicted_responses)
 
