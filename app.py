@@ -27,16 +27,13 @@ os.environ["H5PY_CACHE_GET_ENTRY_LATEST"] = "1"
 model_filename = "model/travelahAlbertCNNFinal.h5"
 loaded_model = tf.keras.models.load_model(model_filename, custom_objects={'KerasLayer': hub.KerasLayer}, compile=False)
 loaded_model.compile(optimizer=optimizer, loss=loss)
+combined_utterance = ""
 
 @app.route('/predict', methods=['POST'])
 def predict_response():
     user_utterance = request.json['userUtterance'].lower()
-    combined_utterance = session.get('combined_utterance', '')
-    session['combined_utterance'] = combined_utterance
-    if combined_utterance:
-        combined_utterance += ". " + user_utterance
-    else:
-        combined_utterance = user_utterance
+    global combined_utterance 
+    combined_utterance += user_utterance + " "
     
     empty_lists = []
     places = []
@@ -68,7 +65,7 @@ def predict_response():
     first_intent = None
     second_intent = None
 
-    if predicted_intent_probability < 0.50:
+    if predicted_intent_probability < 0.35:
         sorted_indices = np.argsort(predictions)[0][::-1]
         first_intent_index = sorted_indices[0]
         second_intent_index = sorted_indices[1]
@@ -85,12 +82,10 @@ def predict_response():
         "places": places
     }
 
-    session['combined_utterance'] = combined_utterance
     if len(empty_lists) == 0:
-        session['combined_utterance'] = ""
         combined_utterance = ""
     
-    return jsonify(response)
+    return jsonify(response, combined_utterance)
 
 @app.route('/flask', methods=['GET'])
 def index():
