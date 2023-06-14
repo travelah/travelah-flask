@@ -12,6 +12,7 @@ import os, json, random, secrets
 app = Flask(__name__)
 secret_key = secrets.token_hex(16)
 app.secret_key = secret_key
+app.config['SESSION_TYPE'] = 'filesystem'
 
 with open('./data/intents.json', 'r') as file:
     intents_data = json.load(file)
