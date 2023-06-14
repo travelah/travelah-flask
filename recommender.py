@@ -2,6 +2,11 @@ import spacy
 from recommendation import main
 import random
 
+nlpReg = spacy.load("model/spacyTravelah/model-reg")
+nlpFood = spacy.load("model/spacyTravelah/model-food")
+nlpHotel = spacy.load("model/spacyTravelah/model-hotel")
+nlpAtt = spacy.load("model/spacyTravelah/model-att")
+
 def follow_up(empty_lists):
     if "region" in empty_lists:
         return "I can do that. Please provide the desired region for your trip"
@@ -15,11 +20,6 @@ def follow_up(empty_lists):
         return None
 
 def predict_entities(text):
-    nlpReg = spacy.load("model/spacyTravelah/model-reg")
-    nlpFood = spacy.load("model/spacyTravelah/model-food")
-    nlpHotel = spacy.load("model/spacyTravelah/model-hotel")
-    nlpAtt = spacy.load("model/spacyTravelah/model-att")
-
     models = [nlpReg, nlpFood, nlpHotel, nlpAtt]
 
     region = []

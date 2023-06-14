@@ -85,7 +85,7 @@ def predict_response():
     if len(empty_lists) == 0:
         combined_utterance = ""
     
-    return jsonify(response)
+    return jsonify(response, combined_utterance)
 
 @app.route('/flask', methods=['GET'])
 def index():
